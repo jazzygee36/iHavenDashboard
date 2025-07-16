@@ -1,4 +1,3 @@
-// src/components/ClientWrapper.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -30,17 +29,19 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
 
   if (!hasMounted) return null;
 
+  const content = loading ? (
+    <div className="w-full h-full flex items-center justify-center py-20">
+      <Loading />
+    </div>
+  ) : (
+    children
+  );
+
+  const isLandingPage = pathname === "/";
+
   return (
     <QueryClientProvider client={queryClient}>
-      <MainDashboard>
-        {loading ? (
-          <div className="w-full h-full flex items-center justify-center py-20">
-            <Loading />
-          </div>
-        ) : (
-          children
-        )}
-      </MainDashboard>
+      {isLandingPage ? content : <MainDashboard>{content}</MainDashboard>}
     </QueryClientProvider>
   );
 }

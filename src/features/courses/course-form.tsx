@@ -4,21 +4,33 @@ import { useState } from "react";
 import HomeButton from "@/components/button";
 import HomeInput from "@/components/input";
 import { Course } from "./index";
+import { createCourse } from "@/api/lib/create-course";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface Props {
-  setCourses: React.Dispatch<React.SetStateAction<Course[]>>;
   onClose: () => void;
 }
 
-const CourseForm = ({ setCourses, onClose }: Props) => {
+const CourseForm = ({ onClose }: Props) => {
+  const queryClient = useQueryClient();
+
   const [formData, setFormData] = useState<Course>({
     title: "",
     category: "",
-    instructor: "",
+    instructorsName: "",
     duration: "",
     price: "",
     curriculum: "",
     status: "Draft",
+  });
+
+  const createMutation = useMutation({
+    mutationFn: createCourse,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
+      onClose();
+      resetForm();
+    },
   });
 
   const handleChange = (
@@ -28,19 +40,21 @@ const CourseForm = ({ setCourses, onClose }: Props) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setCourses((prev) => [...prev, formData]);
-    onClose();
+  const resetForm = () => {
     setFormData({
       title: "",
       category: "",
-      instructor: "",
+      instructorsName: "",
       duration: "",
       price: "",
       curriculum: "",
       status: "Draft",
     });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    createMutation.mutate(formData);
   };
 
   return (
@@ -65,9 +79,9 @@ const CourseForm = ({ setCourses, onClose }: Props) => {
       />
       <HomeInput
         type="text"
-        name="instructor"
+        name="instructorsName"
         placeholder="Instructor Name"
-        value={formData.instructor}
+        value={formData.instructorsName}
         onChange={handleChange}
         required
         height="45px"
@@ -88,7 +102,6 @@ const CourseForm = ({ setCourses, onClose }: Props) => {
         onChange={handleChange}
         height="45px"
       />
-
       <textarea
         name="curriculum"
         placeholder="Curriculum Overview"
@@ -98,22 +111,15 @@ const CourseForm = ({ setCourses, onClose }: Props) => {
         rows={4}
       />
 
-      {/* <select
-        name="status"
-        value={formData.status}
-        onChange={handleChange}
-        className="border px-3 py-2 rounded-md"
-      >
-        <option value="Published">Published</option>
-        <option value="Draft">Draft</option>
-      </select> */}
-
       <HomeButton
         type="submit"
-        title="Add Course"
+      title={createMutation.status === "pending" ? "Submitting..." : "Add Course"}
+
         bg="#3F6FB9"
         width="100%"
         height="45px"
+       disabled={createMutation.status === "pending"}
+
       />
     </form>
   );

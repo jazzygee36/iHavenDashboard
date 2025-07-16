@@ -10,9 +10,9 @@ import React, { useState } from "react";
 
 const statusStyles: Record<string, string> = {
   Active:
-    "bg-green-100 text-green-700 border border-green-300 rounded-lg px-3 py-[5px] text-xs",
+    " text-green-700 border border-green-300 rounded-lg px-3 py-[5px] text-xs",
   "Non-Active":
-    "bg-yellow-100 text-yellow-700 border border-yellow-300 rounded-lg px-3 py-[5px] text-xs",
+    " text-yellow-700 border border-yellow-300 rounded-lg px-3 py-[5px] text-xs",
 };
 
 const paymentStyles: Record<string, string> = {
@@ -63,7 +63,7 @@ const DashboardTable = () => {
     <>
       <div className="bg-white px-4 py-6 rounded-lg shadow-md overflow-x-auto">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
-          <div>
+          
             <h1 className="text-lg font-semibold text-gray-800">
               All Registered Users
             </h1>
@@ -77,10 +77,10 @@ const DashboardTable = () => {
                 id={""}
               />
             </div>
-          </div>
-          <span className="text-xs text-[#3F6FB9] underline cursor-pointer">
+          
+          {/* <span className="text-xs text-[#3F6FB9] underline cursor-pointer">
             See More
-          </span>
+          </span> */}
         </div>
 
         <table className="w-full text-left text-xs min-w-[800px]">

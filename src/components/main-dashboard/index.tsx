@@ -19,7 +19,7 @@ const MainDashboard = ({ children }: { children: React.ReactNode }) => {
     <div className="flex h-screen bg-[#F9FAFB] overflow-hidden">
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
 
-      <div className="flex flex-col flex-1 overflow-y-auto px-4 md:px-6 pb-6">
+      <div className="flex flex-col flex-1 overflow-y-auto px-1 md:px-0 pb-6">
         <Header title={title} setIsOpen={setIsOpen} />
         <main className="mt-8">{children}</main>
       </div>

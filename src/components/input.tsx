@@ -1,39 +1,70 @@
-import type { InputProps } from "../utils/interface";
+import { forwardRef, useState } from "react";
+import { InputProps } from "../utils/interface";
+import EyeOpen from "@/assets/svg/eye-open";
+import CloseEye from "@/assets/svg/close-eye";
 
+const HomeInput = forwardRef<HTMLInputElement, InputProps>(
+  (
+    {
+      type,
+      placeholder,
+      label,
+      onChange,
+      value,
+      name,
+      border,
+      onKeyPress,
+      readOnly,
+      borderRadius,
+      width,
+      onKeyDown,
+      disabled,
+    },
+    ref
+  ) => {
+    const [visible, setVisible] = useState<boolean>(false);
 
-const HomeInput = ({
-  type,
-  placeholder,
-  label,
-  onChange,
-  value,
-  name,
-  border,
-  onKeyPress,
-  readOnly,
-  className,
-  height,
-  borderRadius,
-  boxShadow,
-  ...props
-}: InputProps) => {
-  return (
-    <div className='w-full'>
-      {label && <h3 className='text-[#1E1E1E] text-[13px] font-roboto mb-2'>{label}</h3>}
-      <input
-        type={type}
-        placeholder={placeholder}
-        name={name}
-        value={value}
-        onChange={onChange}
-        onKeyPress={onKeyPress}
-        readOnly={readOnly}
-        className={`${className}  w-full   ${border} rounded-md outline-none px-4 bg-[#F6F5F5] placeholder-[#98A9BC] placeholder:text-[14px] placeholder:font-normal`}
-        {...props}
-        style={{ border: border, height: height, borderRadius: borderRadius, boxShadow:boxShadow}}
-      />
-    </div>
-  );
-};
+    const handleTogglePassword = () => {
+      setVisible((prev) => !prev);
+    };
+
+    return (
+      <div className="w-full">
+        {label && (
+          <h3 className="text-[#1E1E1E] text-[13px] font-roboto mb-2">
+            {label}
+          </h3>
+        )}
+        <div className="relative items-center">
+          <input
+            ref={ref} // ✅ Required for React Hook Form
+            type={type === "password" && visible ? "text" : type}
+            placeholder={placeholder}
+            name={name}
+            value={value}
+            disabled={disabled}
+            onChange={onChange}
+            onKeyDown={onKeyDown}
+            onKeyPress={onKeyPress}
+            readOnly={readOnly}
+            style={{ borderRadius, width }}
+            className={`h-[45px] w-full border-solid border-[1px] border-[#E8ECEF] ${border} rounded-[2px] outline-none px-4 placeholder-[#98A9BC] placeholder:text-[14px] placeholder:font-[400]`}
+          />
+          {type === "password" && (
+            <div
+              className="absolute cursor-pointer top-3 right-2"
+              onClick={handleTogglePassword}
+            >
+              {visible ? <EyeOpen /> : <CloseEye />}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+);
+
+// Required for `forwardRef` components
+HomeInput.displayName = "HomeInput";
 
 export default HomeInput;
