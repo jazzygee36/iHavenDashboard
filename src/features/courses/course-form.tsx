@@ -14,7 +14,7 @@ interface Props {
 const CourseForm = ({ onClose }: Props) => {
   const queryClient = useQueryClient();
 
-  const [formData, setFormData] = useState<Course>({
+  const [formData, setFormData] = useState<Omit<Course, "image">>({
     title: "",
     category: "",
     instructorsName: "",
@@ -23,6 +23,8 @@ const CourseForm = ({ onClose }: Props) => {
     curriculum: "",
     status: "Draft",
   });
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const createMutation = useMutation({
     mutationFn: createCourse,
@@ -34,10 +36,18 @@ const CourseForm = ({ onClose }: Props) => {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setImageFile(e.target.files[0]);
+    }
   };
 
   const resetForm = () => {
@@ -50,15 +60,41 @@ const CourseForm = ({ onClose }: Props) => {
       curriculum: "",
       status: "Draft",
     });
+    setImageFile(null);
   };
+
+  const allFieldsFilled =
+    imageFile &&
+    formData.title &&
+    formData.category &&
+    formData.instructorsName &&
+    formData.duration &&
+    formData.price &&
+    formData.curriculum;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createMutation.mutate(formData);
+    if (!allFieldsFilled) return;
+
+    const submissionData = new FormData();
+    submissionData.append("image", imageFile!);
+    Object.entries(formData).forEach(([key, value]) => {
+      submissionData.append(key, value);
+    });
+
+    createMutation.mutate(submissionData as any);
   };
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <HomeInput
+        type="file"
+        name="image"
+        placeholder="Image"
+        onChange={handleFileChange}
+        required
+        height="45px"
+      />
       <HomeInput
         type="text"
         name="title"
@@ -92,6 +128,7 @@ const CourseForm = ({ onClose }: Props) => {
         placeholder="Duration (e.g. 6 Weeks)"
         value={formData.duration}
         onChange={handleChange}
+        required
         height="45px"
       />
       <HomeInput
@@ -100,6 +137,7 @@ const CourseForm = ({ onClose }: Props) => {
         placeholder="Price (₦)"
         value={formData.price}
         onChange={handleChange}
+        required
         height="45px"
       />
       <textarea
@@ -108,18 +146,19 @@ const CourseForm = ({ onClose }: Props) => {
         className="border px-3 py-2 rounded-md w-full"
         value={formData.curriculum}
         onChange={handleChange}
+        required
         rows={4}
       />
 
       <HomeButton
         type="submit"
-      title={createMutation.status === "pending" ? "Submitting..." : "Add Course"}
-
+        title={
+          createMutation.status === "pending" ? "Submitting..." : "Add Course"
+        }
         bg="#3F6FB9"
         width="100%"
         height="45px"
-       disabled={createMutation.status === "pending"}
-
+        disabled={!allFieldsFilled || createMutation.status === "pending"}
       />
     </form>
   );

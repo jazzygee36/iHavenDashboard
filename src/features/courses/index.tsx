@@ -8,6 +8,7 @@ import { getAllCourses } from "@/api/lib/all-course";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { deleteCourse } from "@/api/lib/delete-courses";
+import Image from "next/image";
 
 export interface Course {
   title: string;
@@ -16,6 +17,7 @@ export interface Course {
   duration: string;
   price: string;
   curriculum: string;
+  image: string;
   status?: string;
 }
 
@@ -77,6 +79,7 @@ const CoursesPage = () => {
             <table className="w-full text-sm text-left min-w-[600px]">
               <thead className="bg-gray-100 text-gray-600">
                 <tr>
+                  <th className="p-3 whitespace-nowrap">Img</th>
                   <th className="p-3 whitespace-nowrap">Title</th>
                   <th className="p-3 whitespace-nowrap">Category</th>
                   <th className="p-3 whitespace-nowrap">Instructor</th>
@@ -89,6 +92,21 @@ const CoursesPage = () => {
               <tbody>
                 {courses.map((course: any, idx: number) => (
                   <tr key={idx} className="border-b hover:bg-gray-50">
+                    <td className="p-3">
+                      {course.image ? (
+                        <Image
+                          src={course.image}
+                          alt={course.title}
+                          width={60}
+                          height={60}
+                          className="rounded-md object-cover"
+                        />
+                      ) : (
+                        <div className="w-[60px] h-[60px] bg-gray-200 rounded-md flex items-center justify-center text-xs text-gray-500">
+                          No Image
+                        </div>
+                      )}
+                    </td>
                     <td className="p-3">{course.title}</td>
                     <td className="p-3">{course.category}</td>
                     <td className="p-3">{course.instructorsName}</td>
