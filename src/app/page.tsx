@@ -3,19 +3,34 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-
+import Toast from "@/components/toast";
 import HomeButton from "@/components/button";
 import HomeInput from "@/components/input";
 
 const Login = () => {
   const router = useRouter();
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error" | "info">(
+    "info"
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    //  if (response?.status === false) {
+    //     setToastMessage(response.status || "You cannot deactivate your own account.");
+    //     setToastType("error");
+    //     setShowToast(true);
+    //     return;
+    //   }
+
     if (email === "olayinkamferanmi@gmail.com" && password === "admin") {
+      setToastMessage("Login successful...");
+      setToastType("success");
+      setShowToast(true);
       // ✅ Set a cookie (you can also set expiry, secure, etc.)
       Cookies.set("token", "your-static-token-or-generated-value", {
         expires: 1, // 1 day
@@ -25,7 +40,10 @@ const Login = () => {
 
       router.push("/dashboard");
     } else {
-      alert("Email or password not correct");
+      // alert("");
+      setToastMessage("Email or Password not correct");
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
@@ -67,6 +85,13 @@ const Login = () => {
           />
         </form>
       </div>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 };

@@ -4,6 +4,8 @@ import { usePathname, useRouter } from "next/navigation";
 import DashboardIcon from "@/assets/svg/dashboardIcon";
 import SettingsIcon from "@/assets/svg/settings";
 import BookIcon from "@/assets/svg/bookIcon";
+import LogOutIcon from "@/assets/svg/logOut";
+import Cookies from "js-cookie";
 
 const Links = [
   { name: "Dashboard", icon: DashboardIcon, path: "/dashboard" },
@@ -22,11 +24,16 @@ const Sidebar = ({
   const router = useRouter();
   const pathname = usePathname();
 
+  const handleLogOut = () => {
+    Cookies.remove("token");
+    router.push("/");
+  };
+
   return (
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-40 lg:hidden z-10"
+          className="fixed inset-0 bg-black/[0.50] bg-opacity-40 lg:hidden z-10"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -36,32 +43,48 @@ const Sidebar = ({
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        <div className="flex justify-between items-center px-5 py-6 border-b border-gray-700">
-          <h2 className="text-lg font-bold tracking-wide">iHaven</h2>
-          <button className="lg:hidden" onClick={() => setIsOpen(false)}>
-            ✕
-          </button>
-        </div>
-
-        <nav className="px-5 py-6 space-y-4">
-          {Links.map(({ name, icon: Icon, path }) => (
-            <div
-              key={name}
-              onClick={() => {
-                router.push(path);
-                setIsOpen(false);
-              }}
-              className={`flex items-center gap-4 px-4 py-3 rounded-md cursor-pointer transition-all duration-200 ${
-                pathname === path
-                  ? "bg-[#3F6FB9] text-white font-semibold"
-                  : "hover:bg-gray-700 text-gray-300"
-              }`}
-            >
-              <Icon color={pathname === path ? "#fff" : "#9CA3AF"} />
-              <span className="text-sm">{name}</span>
+        <div className="flex flex-col justify-between h-full">
+          {/* Top: Logo and Links */}
+          <div>
+            <div className="flex justify-between items-center px-5 py-6 border-b border-gray-700">
+              <h2 className="text-lg font-bold tracking-wide">iHaven</h2>
+              <button className="lg:hidden" onClick={() => setIsOpen(false)}>
+                ✕
+              </button>
             </div>
-          ))}
-        </nav>
+
+            <nav className="px-5 py-6 space-y-4">
+              {Links.map(({ name, icon: Icon, path }) => (
+                <div
+                  key={name}
+                  onClick={() => {
+                    router.push(path);
+                    setIsOpen(false);
+                  }}
+                  className={`flex items-center gap-4 px-4 py-3 rounded-md cursor-pointer transition-all duration-200 ${
+                    pathname === path
+                      ? "bg-[#3F6FB9] text-white font-semibold"
+                      : "hover:bg-gray-700 text-gray-300"
+                  }`}
+                >
+                  <Icon color={pathname === path ? "#fff" : "#9CA3AF"} />
+                  <span className="text-sm">{name}</span>
+                </div>
+              ))}
+            </nav>
+          </div>
+
+          {/* Bottom: Logout */}
+          <div className="px-5 pb-6">
+            <div
+              className="text-red-500 font-bold px-4 py-3 cursor-pointer flex items-center gap-4 rounded-md transition-all duration-200 hover:bg-gray-700 hover:text-gray-300"
+              onClick={handleLogOut}
+            >
+              <LogOutIcon />
+              <span className="text-sm">LogOut</span>
+            </div>
+          </div>
+        </div>
       </aside>
     </>
   );
